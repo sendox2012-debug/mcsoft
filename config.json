@@ -1,5 +1,5 @@
 {
-  "cps_delay": 0.01,
+  "cps_delay": 0.6,
   "jump_tick": 0.05,
   "jump_hold": 0.05,
   "rest_interval": 60,

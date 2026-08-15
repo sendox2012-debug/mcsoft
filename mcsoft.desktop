@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=MCSoft
+Comment=Minecraft Automation Toolkit
+Exec=sudo /home/said/Documents/mcsoft/.venv/bin/python /home/said/Documents/mcsoft/main.py
+Icon=/home/said/Documents/mcsoft/icon.svg
+Terminal=false
+Type=Application
+Categories=Game;Utility;
+StartupNotify=true

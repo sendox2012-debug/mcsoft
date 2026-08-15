@@ -1,0 +1,18 @@
+{
+  "cps_delay": 0.01,
+  "jump_tick": 0.05,
+  "jump_hold": 0.05,
+  "rest_interval": 60,
+  "rest_duration": 10,
+  "build_delay": 0.05,
+  "f12_before_rest": true,
+  "hotkeys": {
+    "left": "U",
+    "right": "I",
+    "jump": "X",
+    "dig": "Y",
+    "run": "GRAVE",
+    "build": "F6",
+    "master": "F7"
+  }
+}

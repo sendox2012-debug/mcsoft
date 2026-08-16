@@ -1,75 +1,33 @@
-name: Build MCSoft
+name: Build Windows EXE
 
-on:
-  push:
-    branches: [main, master]
-  workflow_dispatch:
+on: [push] # Собирать при каждом пуше в репозиторий
 
 jobs:
-  build-windows:
-    runs-on: windows-latest
+  build:
+    runs-on: windows-latest # Запуск на сервере Windows
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-python-version: '3.11' # Укажите вашу версию
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install PySide6 pynput pywin32 evdev pyinstaller pillow
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install eel pynput Pillow PySide6 pywebview pyinstaller
+        # Примечание: evdev убираем, так как он работает ТОЛЬКО на Linux
 
-      - name: Create icon
-        run: |
-          pip install cairosvg
-          python -c "import cairosvg; cairosvg.svg2png(url='icon.svg', write_to='icon.png', output_width=256)"
-          python -c "from PIL import Image; img = Image.open('icon.png'); img.save('icon.ico', sizes=[(16,16),(32,32),(48,48),(64,64),(128,128),(256,256)])"
+    - name: Build EXE
+      run: |
+        pyinstaller --onefile --noconsole --add-data "web;web" main.py
+        # Обратите внимание: на Windows в --add-data используется точка с запятой (;), а не двоеточие (:)
 
-      - name: Build EXE
-        run: |
-          pyinstaller --onefile --windowed --uac-admin --name MCSoft --icon icon.ico --add-data "icons;icons" --add-data "icon.svg;." --collect-all PySide6 --hidden-import win32api --hidden-import win32con --hidden-import pynput.keyboard._win32 main.py
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: MCSoft-Windows
-          path: dist/MCSoft.exe
-          retention-days: 90
-
-  build-linux:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install system deps
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libxkbcommon0 libgl1 libegl1 libevdev2
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install PySide6 pynput evdev pyinstaller
-
-      - name: Build binary
-        run: |
-          pyinstaller --onefile --windowed --name MCSoft --add-data "icons:icons" --add-data "icon.svg:." --collect-all PySide6 --hidden-import evdev --hidden-import pynput.keyboard._xorg main.py
-          chmod +x dist/MCSoft
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: MCSoft-Linux
-          path: dist/MCSoft
-          retention-days: 90
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-app
+        path: dist/main.exe

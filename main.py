@@ -37,6 +37,14 @@ def elevate():
 
 elevate()
 
+# --- ЭТОТ БЛОК НУЖНО ДОБАВИТЬ ДЛЯ ПОДДЕРЖКИ ПУТЕЙ В PYINSTALLER ---
+def get_resource_path(relative_path):
+    """ Возвращает абсолютный путь к ресурсам проекта (работает и в .exe) """
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), relative_path)
+# -----------------------------------------------------------------
+
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QIcon
 
@@ -54,8 +62,8 @@ def main():
     app.setStyle("Fusion")
     app.setQuitOnLastWindowClosed(True)
 
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    icon_path = os.path.join(base_dir, "icon.svg")
+    # Используем безопасную функцию для поиска иконки
+    icon_path = get_resource_path("icon.svg")
     if os.path.exists(icon_path):
         app.setWindowIcon(QIcon(icon_path))
 

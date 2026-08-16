@@ -1,6 +1,6 @@
 name: Build Windows EXE
 
-on: [push] # Собирать при каждом пуше в репозиторий
+on: [push] # Сборка будет запускаться автоматически при каждом git push
 
 jobs:
   build:
@@ -13,21 +13,25 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-python-version: '3.11' # Укажите вашу версию
+        python-version: '3.12' # Указываем вашу версию Python (как в логах — 3.12)
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install eel pynput Pillow PySide6 pywebview pyinstaller
-        # Примечание: evdev убираем, так как он работает ТОЛЬКО на Linux
+        # Устанавливаем все библиотеки для вашего кликера
+        # Примечание: evdev исключен, так как мы собираем под Windows
+        pip install pynput Pillow PySide6 pywebview pyinstaller
 
-    - name: Build EXE
+    - name: Build EXE via PyInstaller
       run: |
-        pyinstaller --onefile --noconsole --add-data "web;web" main.py
-        # Обратите внимание: на Windows в --add-data используется точка с запятой (;), а не двоеточие (:)
+        # --onefile: собирает всё в один exe
+        # --noconsole: отключает фоновое окно консоли (кликер запустится как чистое GUI приложение)
+        # --add-data "icon.svg;.": упаковывает иконку внутрь exe
+        # --icon="icon.svg": устанавливает иконку для самого .exe файла в проводнике Windows
+        pyinstaller --onefile --noconsole --add-data "icon.ico;." --icon="icon.ico" main.py
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: windows-app
-        path: dist/main.exe
+        name: clicker-windows-app
+        path: dist/main.exe # Путь, куда PyInstaller положит готовый файл
